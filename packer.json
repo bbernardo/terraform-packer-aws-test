@@ -1,0 +1,45 @@
+{
+  "variables": {
+        "aws_access_key": "",
+        "aws_secret_key": ""
+  },
+  "builders": [{
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key`}}",        
+        "region": "us-west-1",
+        "source_ami": "ami-06397100adf427136",
+        "instance_type": "t2.micro",
+        "ssh_username": "ubuntu",
+        "ami_name": "packer-ami {{timestamp}}"
+      }
+  ],
+  "provisioners": [{
+        "type": "shell",
+        "scripts": [  "scripts/install_software.sh"   ],
+        "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'",
+        "pause_before": "10s"
+      },
+      {
+        "type": "file",
+        "source": "app.py",
+        "destination": "/home/ubuntu/app.py"
+      },
+      {
+        "type": "file",
+        "source": "scripts/weather.service",
+        "destination": "/home/ubuntu/weather.service"
+      },
+      {
+        "type": "shell",
+        "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'",
+        "inline": "mv /home/ubuntu/weather.service /etc/systemd/system/weather.service"
+      },
+      {
+        "type": "shell",
+        "inline": [ "systemctl enable weather" ],
+        "execute_command": "{{ .Vars }} sudo -E sh '{{ .Path }}'"
+      }
+  ]
+}
+

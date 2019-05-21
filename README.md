@@ -11,4 +11,6 @@ After that, run the ./build-and-launch.sh command.
 At the end of the whole process, access through the url of the load balancer like this: 
 
 
-<load_balancer_url>:3000/weather
+<load_balancer_url>:3000/weather <br/>
+
+The project assumes that the "aws_access_key" and "aws_secret_key" variables are configured.
